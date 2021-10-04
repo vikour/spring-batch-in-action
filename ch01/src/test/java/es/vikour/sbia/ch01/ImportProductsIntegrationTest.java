@@ -52,17 +52,19 @@ public class ImportProductsIntegrationTest {
 			 .toJobParameters());
 		
 		assertEquals(8,jdbcTemplate.queryForInt("select count(1) from product"));
+	}
+	
+	@Test
+	public void importProductsWithErrors() throws Exception {
 		
-		jdbcTemplate.query("select * from product", 
-				(rs, rownum) -> 	
-				    Product.builder()
-				    .id(rs.getString("id"))
-				    .name(rs.getString("name"))
-				    .description(rs.getString("description"))
-				    .price(BigDecimal.valueOf(rs.getDouble("price")))
-				    .build()
-				 ).stream().forEach((p) -> log.info(p.toString()));
-				    
+		jobLauncher.run(
+			job, new JobParametersBuilder()
+			 .addString("inputResource", "classpath:/input/productsWithError.zip")
+			 .addString("targetDirectory", "./target/importproductbatch/")
+			 .addString("targetFile", "products.txt")
+			 .toJobParameters());
+		
+		assertEquals(7,jdbcTemplate.queryForInt("select count(1) from product"));
 	}
 	
 
