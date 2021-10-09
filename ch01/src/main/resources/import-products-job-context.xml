@@ -11,7 +11,7 @@
 		<batch:step id="decompress" next="readWriteProducts">
 			<batch:tasklet ref="decompressTasklet" />
 		</batch:step>	
-		<batch:step id="readWriteProducts">
+		<batch:step id="readWriteProducts" next="cleanUp" >
 			<batch:tasklet>
 				<batch:chunk reader="reader" writer="writer" commit-interval="100" skip-limit="5">
 					<batch:skippable-exception-classes>
@@ -19,7 +19,10 @@
 					</batch:skippable-exception-classes>
 				</batch:chunk>
 			</batch:tasklet>
-		</batch:step>	
+		</batch:step>
+		<batch:step id="cleanUp">
+			<batch:tasklet ref="cleanUpTasklet" />
+		</batch:step>
 	</batch:job>
 	
 	<bean id="decompressTasklet" scope="step"
@@ -53,5 +56,9 @@
 	<bean id="writer" class="es.vikour.sbia.ch01.ProductJdbcItemWriter">
 		<constructor-arg ref="dataSource" />
 	</bean>
-	
+		
+	<bean id="cleanUpTasklet" scope="step"
+		class="es.vikour.sbia.ch01.CleanUpTasklet">
+		<property name="targetDirectory" value="#{jobParameters['targetDirectory']}" />
+	</bean>
 </beans>
