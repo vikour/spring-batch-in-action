@@ -7,14 +7,38 @@
     <relativePath>..</relativePath>
   </parent>
   <artifactId>ch02</artifactId>
+  <packaging>war</packaging>
+  
+  <properties>
+  	<spring-batch-admin.version>1.2.0.RELEASE</spring-batch-admin.version>
+  </properties>
   
   <dependencies>
+  
   	<dependency>
   		<groupId>es.vikour.sbia</groupId>
   		<artifactId>ch01</artifactId>
   		<version>${project.version}</version>
   	</dependency>
+  	
+  	<dependency>
+  		<groupId>org.springframework.batch</groupId>
+  		<artifactId>spring-batch-admin-resources</artifactId>
+  		<version>${spring-batch-admin.version}</version>
+  	</dependency>
+  	
+  	<dependency>
+  		<groupId>org.springframework.batch</groupId>
+  		<artifactId>spring-batch-admin-manager</artifactId>
+  		<version>${spring-batch-admin.version}</version>
+  	</dependency>
+  	
+  	<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-log4j12</artifactId>
+	    <version>1.5.5</version>
+	</dependency>
+  	
   </dependencies>
-  
   
 </project>
