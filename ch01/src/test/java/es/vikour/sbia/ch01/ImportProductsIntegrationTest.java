@@ -9,7 +9,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -80,6 +84,30 @@ public class ImportProductsIntegrationTest {
 	private void assertTargetDirectoryDoesntExists() {
 		File targetDirectory = new File(TARGET_DIRECTORY);
 		assertFalse(targetDirectory.exists());
+	}
+	
+	// Check job parameters
+	
+	@Test(expected = JobParametersInvalidException.class)
+	public void whenJobRunWithoutParam_thenError() throws Exception {
+		jobLauncher.run(job, new JobParametersBuilder().toJobParameters());
+	}
+	
+	@Test(expected = JobParametersInvalidException.class)
+	public void whenJobOnetParam_thenError() throws Exception {
+		jobLauncher.run(
+				job, new JobParametersBuilder()
+				 .addString("inputResource", INPUT_ERROR_FILE)
+				 .toJobParameters());
+	}
+	
+	@Test(expected = JobParametersInvalidException.class)
+	public void whenJobTwotParam_thenError() throws Exception {
+		jobLauncher.run(
+				job, new JobParametersBuilder()
+				 .addString("inputResource", INPUT_ERROR_FILE)
+				 .addString("targetDirectory", TARGET_DIRECTORY)
+				 .toJobParameters());
 	}
 	
 

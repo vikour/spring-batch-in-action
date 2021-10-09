@@ -8,6 +8,7 @@
 	http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
 
 	<batch:job id="importProduct">
+		<batch:validator ref="importProductParamValidator" />
 		<batch:step id="decompress" next="readWriteProducts">
 			<batch:tasklet ref="decompressTasklet" />
 		</batch:step>	
@@ -24,6 +25,17 @@
 			<batch:tasklet ref="cleanUpTasklet" />
 		</batch:step>
 	</batch:job>
+	
+	<bean id="importProductParamValidator"
+		class="org.springframework.batch.core.job.DefaultJobParametersValidator">
+		<property name="requiredKeys">
+			<set>
+				<value>inputResource</value>
+				<value>targetDirectory</value>
+				<value>targetFile</value>
+			</set>
+		</property>
+	</bean>
 	
 	<bean id="decompressTasklet" scope="step"
 		class="es.vikour.sbia.ch01.DecompressTasklet">
