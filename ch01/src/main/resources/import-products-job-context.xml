@@ -8,12 +8,15 @@
 	http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
 
 	<batch:job id="importProduct">
+		<batch:listeners>
+			<batch:listener ref="importProductsJobListener" />
+		</batch:listeners>
 		<batch:validator ref="importProductParamValidator" />
 		<batch:step id="decompress" next="readWriteProducts">
 			<batch:tasklet ref="decompressTasklet" />
 		</batch:step>	
 		<batch:step id="readWriteProducts" next="cleanUp" >
-			<batch:tasklet>
+			<batch:tasklet start-limit="3" allow-start-if-complete="true" >
 				<batch:chunk reader="reader" writer="writer" commit-interval="100" skip-limit="5">
 					<batch:skippable-exception-classes>
 						<batch:include class="org.springframework.batch.item.file.FlatFileParseException"/>
@@ -25,6 +28,9 @@
 			<batch:tasklet ref="cleanUpTasklet" />
 		</batch:step>
 	</batch:job>
+	
+	<bean id="importProductsJobListener"
+		class="es.vikour.sbia.ch01.batch.ImportProductsJobListener" />
 	
 	<bean id="importProductParamValidator"
 		class="org.springframework.batch.core.job.DefaultJobParametersValidator">
@@ -38,7 +44,7 @@
 	</bean>
 	
 	<bean id="decompressTasklet" scope="step"
-		class="es.vikour.sbia.ch01.DecompressTasklet">
+		class="es.vikour.sbia.ch01.batch.DecompressTasklet">
 		<property name="inputResource" value="#{jobParameters['inputResource']}" />
 		<property name="targetDirectory" value="#{jobParameters['targetDirectory']}" />
 		<property name="targetFile" value="#{jobParameters['targetFile']}" />
@@ -58,19 +64,19 @@
 					</bean>
 				</property>
 				<property name="fieldSetMapper">
-					<bean class="es.vikour.sbia.ch01.ProductFieldSetMapper" />
+					<bean class="es.vikour.sbia.ch01.batch.ProductFieldSetMapper" />
 				</property>
 			</bean>
 		</property>
 	
 	</bean>
 	
-	<bean id="writer" class="es.vikour.sbia.ch01.ProductJdbcItemWriter">
+	<bean id="writer" class="es.vikour.sbia.ch01.batch.ProductJdbcItemWriter">
 		<constructor-arg ref="dataSource" />
 	</bean>
 		
 	<bean id="cleanUpTasklet" scope="step"
-		class="es.vikour.sbia.ch01.CleanUpTasklet">
+		class="es.vikour.sbia.ch01.batch.CleanUpTasklet">
 		<property name="targetDirectory" value="#{jobParameters['targetDirectory']}" />
 	</bean>
 </beans>
