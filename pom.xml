@@ -21,6 +21,7 @@
   <modules>
   	<module>ch01</module>
   	<module>ch02</module>
+  	<module>ch04</module>
   </modules>
   
   <dependencies>
