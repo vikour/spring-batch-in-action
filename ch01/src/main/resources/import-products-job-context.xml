@@ -17,6 +17,9 @@
 		</batch:step>	
 		<batch:step id="readWriteProducts" next="cleanUp" >
 			<batch:tasklet start-limit="3" allow-start-if-complete="true" >
+				<batch:listeners>
+					<batch:listener ref="importProductStepSkipListener" />
+				</batch:listeners>
 				<batch:chunk reader="reader" writer="writer" commit-interval="100" skip-limit="5">
 					<batch:skippable-exception-classes>
 						<batch:include class="org.springframework.batch.item.file.FlatFileParseException"/>
@@ -31,6 +34,9 @@
 	
 	<bean id="importProductsJobListener"
 		class="es.vikour.sbia.ch01.batch.ImportProductsJobListener" />
+		
+	<bean id="importProductStepSkipListener"
+		class="es.vikour.sbia.ch01.batch.ImportProductsStepSkipListener" />
 	
 	<bean id="importProductParamValidator"
 		class="org.springframework.batch.core.job.DefaultJobParametersValidator">
